@@ -35,7 +35,7 @@
             style: 'currency',
             currency: 'COP'
         }) }}</h3>
-        <h3>Descuento: {{ calcDesc }}%</h3>
+        <h3>Descuento: ({{ calcDesc }}%) {{ calcTotalC*(calcDesc/100) }}</h3>
         <h3>Total a pagar: {{ calcPagar.toLocaleString('es-CO', {
             style: 'currency',
             currency: 'COP'
@@ -79,17 +79,7 @@
         return totalC
     })
     
-    const calcCantidad=computed(()=>{
-        let cantidadArticulos=0
-        props.articulos.forEach((articulo)=>{
-            cantidadArticulos+=articulo.cantidad
-
-        })
-
-        return cantidadArticulos
-
-        
-    })
+   
 
 
 
@@ -111,10 +101,9 @@
         }
 
         // Descuento por cantidad
-
-        if(calcCantidad.value>=6 && calcCantidad.value<12){
-            descuentoCantidad=6
-        }else if(calcCantidad.value>=12){
+        if(props.articulos.length>=6 && props.articulos.length<12){
+            descuentoCantidad=10
+        }else if(props.articulos.length>=12){
             descuentoCantidad=20
         }
 
