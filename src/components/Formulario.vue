@@ -3,13 +3,19 @@
     import Tabla from './Tabla.vue'
 
     let articulo=ref('')
-    let cantidad=ref(0)
-    let valorU=ref(0)
+    let cantidad=ref(1)
+    let valorU=ref(1)
 
     
 
     function agregar(){
-        articulos.value.push({nombre:articulo.value, cantidad:cantidad.value, valorU:valorU})
+
+        if(articulo.value.trim()!=='' && cantidad.value>0 && valorU.value>0){
+            articulos.value.push({nombre:articulo.value, cantidad:cantidad.value, valorU:valorU.value})
+            articulo.value=''
+            cantidad.value=1
+            valorU.value=1
+        }
     }
     function eliminar(posicion){
         articulos.value.splice(posicion,1)
@@ -21,8 +27,7 @@
 
 
 <template>
-    <main class="main">
-        <section class="form-container">
+     <section class="form-section">
             
             <form class="form" action="">
                 <h1>Formulario</h1>
@@ -44,39 +49,31 @@
     
             </form>
 
-        </section>
+    </section>
+
+    <section class="table-section">
+        <Tabla :articulos="articulos" @eliminar="eliminar"></Tabla>
+    </section>
         
-        <section>
-            <Tabla :articulos="articulos" @eliminar="eliminar"></Tabla>
-        </section>
-      
-        </main>
+       
+  
 </template>
 
 
 <style scoped>
-    .main{
-        display: flex;
-        gap: 200px;
-       
-    }
-    .form-container{
-        width: 500px;
-        height: 600px;
+    
+
+    .form-section{
         background-color: rgb(206, 206, 206);
         display: flex;
-        padding: 20px;
         justify-content: center;
         align-items: center;
     }
     
     .form{
-        
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 50px;
-
+        display: grid;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+        gap: 20px;
     }
 
     .form .input{

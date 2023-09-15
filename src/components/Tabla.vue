@@ -1,5 +1,7 @@
 <template>
-    <table class="table">
+
+    <div class="table-container">
+        <table class="table">
         <thead>
             <tr>
                 <th>#</th>
@@ -12,36 +14,46 @@
         </thead>
 
         <tbody>
-            <tr v-for="(articulo,index) of props.articulos" :key="index">
-                <td >{{ index+1}}</td>
+            <tr v-for="(articulo,posicion) of props.articulos" :key="posicion">
+                <td >{{ posicion+1}}</td>
                 <td >{{ articulo.nombre}}</td>
                 <td >{{ articulo.cantidad}}</td>
                 <td >{{ articulo.valorU}}</td>
                 <td >{{ articulo.cantidad*articulo.valorU}}</td>
-                <td><button @click="eliminar(index)">Eliminar</button></td>
+                <td><button @click="eliminar(posicion)">Eliminar</button></td>
                 
             </tr>
 
         </tbody>
 
     </table>
-    <h3>Total compra: {{ calcTotalC }}</h3>
-    <h3>Descuento: {{ calcDesc }}%</h3>
+
+    </div>
+
+    <div class="text-container">
+        <h3>Total compra: {{ calcTotalC.toLocaleString('es-CO', {
+            style: 'currency',
+            currency: 'COP'
+        }) }}</h3>
+        <h3>Descuento: {{ calcDesc }}%</h3>
+        <h3>Total a pagar: {{ calcPagar.toLocaleString('es-CO', {
+            style: 'currency',
+            currency: 'COP'
+        }) }}</h3>
+
+    </div>
+    
 </template>
 
 
 <script setup> 
-
-
-    
-
 
     
     import {ref, defineProps,defineEmits,computed} from 'vue'
 
 
     const props=defineProps({
-        articulos:Object
+        articulos:Array
     
     })
 
@@ -62,25 +74,56 @@
             totalC+=articulo.cantidad*articulo.valorU
             
         });
+        
 
         return totalC
     })
+    
+    const calcCantidad=computed(()=>{
+        let cantidadArticulos=0
+        props.articulos.forEach((articulo)=>{
+            cantidadArticulos+=articulo.cantidad
+
+        })
+
+        return cantidadArticulos
+
+        
+    })
+
 
 
     const calcDesc=computed(()=>{
 
+        let descuentoPrecio=0
+
+        let descuentoCantidad=0
+
         let descuento=0
 
+        // Descuento por precio
         if(calcTotalC.value>=60000 && calcTotalC.value<120000){
-            descuento=5
+            descuentoPrecio=5
         }else if(calcTotalC.value>=120000 && calcTotalC.value<240000){
-            descuento=10
+            descuentoPrecio=10
         }else if (calcTotalC.value>=240000){
-            descuento=15
+            descuentoPrecio=15
         }
+
+        // Descuento por cantidad
+
+        if(calcCantidad.value>=6 && calcCantidad.value<12){
+            descuentoCantidad=6
+        }else if(calcCantidad.value>=12){
+            descuentoCantidad=20
+        }
+
+        descuento=Math.max(descuentoPrecio,descuentoCantidad)
 
         return descuento
     })
+
+    const calcPagar=computed(()=>{return calcTotalC.value*(1-calcDesc.value/100)})
 
 
 
@@ -93,7 +136,37 @@
 
 
 <style scoped>
-    .table{
-        width: 500px;
+
+    .text-container{
+        margin-left: 20px;
     }
+
+    .table-container{
+        width: 100%;
+        height: 500px;
+        max-height:  500px;
+        overflow: auto;
+        margin-bottom: 20px;
+    }
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+        height: 100%;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        text-align: left;
+        padding: 20px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    td {
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+    }
+
+   
+
 </style>
